@@ -185,3 +185,8 @@ Java 빅데이터 개발자과정 Spring Boot 학습 리포지토리
 	- MyBatis 적용 
 		- Spring, resource/WEB-INF 위치에 root-context.xml에 DB, Mybatis 설정
 		- SPringBoot, application.properties + Config.java 로 변경
+
+	- 개발시 순서
+		1. Database 테이블 생성
+		2. MyBatis 설정 -> /config/MyBatisConfig.java
+		3. 테이블과 일치하는 클래스 

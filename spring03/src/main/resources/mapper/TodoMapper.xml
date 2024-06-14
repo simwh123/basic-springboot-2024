@@ -5,8 +5,8 @@
 
 <mapper namespace="com.simwo1.spring03.mapper.TodoMapper">
 
-    <select id="selectTodos" resultType="hashmap">
-        SELECT TNO
+    <select id="selectTodos" resultType="com.simwo1.spring03.domain.Todo">
+        SELECT INO
              , TITLE
              , DUEDATE
              , WRITER
@@ -14,6 +14,5 @@
           FROM TODOS
     </select>
 
-    <select>
-    </select>
+
 </mapper>
