@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Spring03Application<spring03>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.simwo1.spring03.Spring03Application",
+            "projectName": "spring03",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
