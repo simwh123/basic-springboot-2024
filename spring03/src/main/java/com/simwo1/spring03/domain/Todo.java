@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Todo {
-    private Integer tno;
+    private int ino;
 
     private String title;
 
@@ -18,5 +18,5 @@ public class Todo {
 
     private String writer;
 
-    private Integer isDone;
+    private int isDone;
 }

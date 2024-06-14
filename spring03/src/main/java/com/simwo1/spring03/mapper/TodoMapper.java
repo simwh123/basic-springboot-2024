@@ -8,5 +8,5 @@ public interface TodoMapper {
 
     List<Todo> selectTodos();
 
-    Todo selectTodo(int tno);
+    Todo selectTodo(int ino);
 }

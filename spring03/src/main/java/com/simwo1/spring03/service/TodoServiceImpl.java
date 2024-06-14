@@ -21,7 +21,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public Todo getTodoByTno(int tno) throws Exception {
-        return todoMapper.selectTodo(tno);
+    public Todo getTodoByTno(int ino) throws Exception {
+        return todoMapper.selectTodo(ino);
     }
 }

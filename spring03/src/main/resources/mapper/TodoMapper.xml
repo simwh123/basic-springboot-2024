@@ -13,6 +13,14 @@
              , ISDONE
           FROM TODOS
     </select>
-
+    <select id="selectTodo" resultType="com.simwo1.spring03.domain.Todo" parameterType="int">
+        SELECT INO
+             , TITLE
+             , DUEDATE
+             , WRITER
+             , ISDONE
+          FROM TODOS
+          WHERE INO= #{ino}
+    </select>
 
 </mapper>
