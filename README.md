@@ -83,7 +83,7 @@ Java 빅데이터 개발자과정 Spring Boot 학습 리포지토리
 			- Chrome 을 기본브라우저 사용 추천
 
 
-## 2일차
+## 2, 3일차
 - Oracle 도커로 설치
 	- Docker는 Virtual Machine을 업그레이드한 시스템
 	- 윈도우 서비스 내(services.msc) Oracle 관련 서비스 종료
@@ -145,13 +145,21 @@ Java 빅데이터 개발자과정 Spring Boot 학습 리포지토리
 	- H2 DB - Spring Boot에서 손쉽게 사용한 Inmemory DB, Oracle, MySql, SQLServer과 쉽게 호환
 	- MySQL - Optional 설명할 DB	
 	
-- Spring Boot + MyBatis
+- Spring Boot + MyBatis 프로젝트
 	- application name : spring02
-	- Spring Boot 3.3.x 에는 MyBatis 없음
-	- Dependency 중 DB(H2, Oracle, MySQL)가 선택되어 있으면 웹서버 실행이 안됨
+	- Spring Boot 3.2.6 선택 - 3.3.x 에는 MyBatis 없음
+	- Dependency
+		- Spring Boot DevTools
+		- Lombok
+		- Spring Web
+		- Thymeleaf
+		- Oracle Driver
+		- Mybatis starter
 
 	- build.gradle 확인
 	- application.properties 추가작성
+	- Dependency 중 DB(H2, Oracle, MySQL)가 선택시 application.properties에 DB설정이 안되면 서버 실행 안됨
+
 	```properties
 	spring.application.name=spring02
 
@@ -179,14 +187,182 @@ Java 빅데이터 개발자과정 Spring Boot 학습 리포지토리
 	## MyBatis 설정
 	## mapper 폴더 및에 여러가지 폴더가 내재, 확장자는 .xml이지만 파일명은 뭐든지 
 	mybatis.mapper-locations=classpath:mapper/**/*.xml
-	mybatis.type-aliases-package=com.hugo83.spring02.domain
+	mybatis.type-aliases-package=com.hugo83.spring02.mapper
 	```
 
 	- MyBatis 적용 
 		- Spring, resource/WEB-INF 위치에 root-context.xml에 DB, Mybatis 설정
 		- SPringBoot, application.properties + Config.java 로 변경
 
-	- 개발시 순서
+	- MyBatis 개발시 순서
+		0. application.properties jdbc:oracle:thin:@localhost:1521:FREE , thin뒤 :이 삭제되어 있었음.
 		1. Database 테이블 생성
 		2. MyBatis 설정 -> /config/MyBatisConfig.java
-		3. 테이블과 일치하는 클래스 
+		3. 테이블과 일치하는 클래스 (domain, entity, dto, vo(readonly), etc...) 생성
+			- 테이블 컬럼 _는 Java클래스는 사용안함
+		4. DB에 데이터를 주고받을 수 있는 클래스 (dao, **mapper**, repository ...) 생성
+			- 쿼리를 클래스내 작성가능, xml로 분리가능
+		5. (Model) 분리했을 경우 /resources/mapper/클래스.xml 생성, 쿼리 입력
+		6. 서비스 인터페이스 /service/*Service.java, 서비스 구현 클래스 /service/*ServiceImpl.java 생성 작성
+		7. 사용자 접근하는 컨트롤러 @RestController 클래스 생성 -> @Controller 변경 가능
+		8. (Controller) ~~경우에 따라 @SpringBootApplication 클래스에 SqlSessionFactory 빈을 생성 메서드 작성~~
+		9. (View) /resource/templates/ Thymeleaf html 생성, 작성
+  
+## 4일차
+- Spring Boot JPA + Oracle + Thymeleaf
+  - JPA -> DB 설계를 하지 않고 엔티티 클래스를 DB로 자동생성 해주는 기술, Query로 만들 필요 없다.
+  - H2 -> Oracle, MySQL, SQLserver등 과 달리 Inmemory DB, 스프링부트 실행되면 같이 실행되는 DB
+			개발 편의성, 다른 DB로 전환시 아주 편리, 개발하는 동안 사용을 추천
+  - Thymeleaf -> JSP의 단점 복잡한 템플릿형태 + 스파게티코드를 해소해주는 템플릿
+  - Bootstrap -> 웹디자인 및 CSS의 혁신! 커스마이징도 가능
+  - 소셜로그인 -> 구글, 카카오, 네이버 등등 소셜로 로그인 기능
+  - React -> 프론트엔드를 분리. 백엔드 서버와 프론트엔드 서버 따로 관리(통합도 가능)
+  
+- Spring Boot JPA 프로젝트 생성
+  - 명령 팔레트로 시작, Spring Initialzr: Create a Gradle Project...
+  - Spring Boot version -> 3.2.6
+  - project language -> Java
+  - Group Id -> com.simwo1
+  - Arifact Id -> backboard
+  - packaging type -> Jar
+  - Java version -> 21
+  - Depedency
+    1. Spring Boot DevTools
+    2. Lombok
+    3. Spring Web
+    4. Thymeleaf
+    5. Oracle Driver(later)
+    6. H2 Databse(later)
+    7. Data JPA(later)
+  - Generate into this folder -> 경로설정 
+      
+- Spring Boot JPA 프로젝트 개발시작
+	1. (설정) build.gradle 디펜던시 확인
+	2. (설정) application.properties 기본설정 입력(포트번호, 로그색상, 자동재빌드, 로그레벨)
+	3. MVC패턴에 맞춰서 각 기능별로 폴더를 생성(controller, service, entity...)
+	4. /controller/MainController.java 생성, 기본 메서드 구현
+	5. (설정) application.properties H2, JPA 설정 추가
+	6. (설정) 웹 서버 실행 http://localhost:8080/h2-console DB 연결확인
+
+	7. /entity/Board.java 생성
+		- GenerationType 타입
+			- AUTO : SpringBoot에서 자동으로 선택(X)
+			- IDENTITY : MySQL, SQLServer
+			- SEQUENCE : Oracle(!)
+		- column이름을 createDate로 만들면 DB에 컬럼명이 create_date 로 생성
+		- 컬럼명에 언더바를 안넣으려면 @column(name = "createDate") 사용
+	8. /entity/Reply.java 생성
+	9. 두 엔티티간 @OneToMany, @ManyToOne 을 설정
+	10. 웹 서버 재시작 후 h2-console에서 테이블 생성 확인
+	11. /repository/BoardRepository.java 빈 인터페이스(JpaReposity 상속) 생성
+	12. /repository/ReplyRepository.java 빈 인터페이스(JpaReposity 상속) 생성
+	13. (설정) application.properties ddl-auto=create -> ddl-auto=update 변경
+	13. /test/.../repository/BoardRepositoryTests.java 생성, 테스트 메서드 작성
+	14. 테스트 시작 > 웹 서버 실행 > h2-console 확인
+
+## 5일차
+- Tip
+	- Java Test 중 OpenJDK 64-Bit Server VM warning: Sharing is 빨간색 경고가 뜨면
+	- Ctrl + ,(설정) > Java Test Config 검색 > settings.json 편집
+	```json
+	"java.test.config": {
+        "vmArgs": [
+            "-Xshare:off"
+        ]
+    }
+	```
+	- 저장 후 실행
+
+- Spring Boot 프로젝트 오류처리
+	- 빌드를 해도 제대로 결과가 반영안되면
+	- Github Remote Repository 에 모두 커밋, 푸시 후
+	- Local Repository를 모두 삭제 후 새로 커밋
+	- 프로젝트 새로 로드, 초기화 
+
+- Spring Boot JPA 프로젝트 개발 계속
+	1. jUnit 테스트로 CRUD 확인
+	2. /service/BoardService.java 생성 후 getList() 메서드 작성
+	3. /controller/BoardController.java 생성 후 /board/list 실행할 수 있는 메서드 작성
+	4. /templates/board/list.html 생성
+		- Thymeleaf 속성
+			- th:if="${board != null}"
+			- th:each="board : ${boardList}"
+			- th:text="${board.title}"
+	5. /service/BoardSerivce.java에 getBoard() 메서드 추가
+	6. /controller/BoardController.java에 /board/detail/{bno} 실행 메서드 작성
+	7. /templates/board/detail.html 생성
+
+		<img src="https://raw.githubusercontent.com/hugoMGSung/basic-springboot-2024/main/images/sp003.png" width="730">
+
+	8. /templates/board/detail.html에 댓글영역 추가
+	9. /service/ReplyService.java 생성, 댓글 저장 메서드 작성
+	10. /controller/ReplyController.java 생성, /reply/create/{bno} 포스트매핑 메서드 작성
+	
+	11. Bootstrap 적용
+		- 다운로드 후 프로젝트에 위치
+		- CDN 링크를 추가
+		- https://www.getbootstrap.com 다운로드 후 압축 해제
+		- boostrap.min.css, bootstrap.min.js templates/static 에 위치
+	12. /templates/board/list.html, detail.html 부트스트랩 적용
+
+		<img src="https://raw.githubusercontent.com/hugoMGSung/basic-springboot-2024/main/images/sp004.png" width="730">
+	
+
+## 6일차
+- Spring Boot JPA 프로젝트 개발 계속
+	1. (설정) build.gradle Thymeleaf 레이아웃 사용을 위한 디펜던시 추가
+	2. /templates/layout.html Thymeleaf로 레이아웃 템플릿 생성
+	3. list.html, detail.html 레이아웃 템플릿 적용
+	4. /templates/layout.html에 Bootstrap CDN 적용
+	5. /templates/board/list.html에 게시글 등록버튼 추가
+	6. /templates/board/create.html 게시글 작성 페이지 생성
+	7. /controller/BoardController.java create() GetMapping 메서드 작성
+	8. /service/BoardService.java setBoard() 작성
+	9. /controller/BoardController.java create() PostMapping 메서드 작성
+	10. (문제) 아무내용도 안적어도 저장됨
+	11. (설정) build.gradle 입력값 검증 Spring Boot Validation 디펜던시 추가
+	12. /validation/BoardForm.java 클래스 생성
+	13. /controller/BoardController.java에 BoardForm을 전달(Get, PostMapping 둘다)
+	14. create.html 입력항목 name, id를 th:field로 변경(ex. th:field="*{title}")
+	15. 댓글등록에도 반영. ReplyForm, ReplyController, detail.html 작업(12 ~ 14 내용과 유사)
+	16. detail.html 경고영역 div는 create.html에서 복사해서 가져올 것
+	17. (문제) 각 입력창에 공백을 넣었을 때 입력되는 문제 @NotEmpty는 스페이스를 허용 -> @NotBlank로 변경
+
+		<img src="https://raw.githubusercontent.com/hugoMGSung/basic-springboot-2024/main/images/sp005.png" width="730">
+
+	18. /templates/layout.html에 네비게이션바(navbar) 추가
+	19. 테스트로 대량 데이터 추가
+
+## 7일차
+- Spring Boot JPA 프로젝트 개발 계속
+	0. 개념
+		```sql
+		-- Oracle 전용(11g 이하는 이 쿼리가 동작안함)
+		SELECT b1_0.bno, b1_0.content, b1_0.create_date, b1_0.title 
+		  FROM board b1_0 OFFSET 0    		-- 0, 10, 20 페이지 사이즈만큼 증가
+		  ROWS FETCH FIRST 10 ROWS ONLY 	-- 페이지사이즈
+		```
+	1. 페이징(중요!)
+		- /repository/BoardRepository.java findAll(pageable) 인터페이스 메서드 작성
+		- /service/BoardSerivce.java getList(page) 메서드 작성
+		- /controller/BoardController.java list() 메서드 수정
+		- /templates/board/list.html boardList -> paging 변경
+		- /templates/board/list.html 하단 페이징 버튼 추가, thymeleaf 기능추가
+		- /service/BoardService.java getList() 최신순 역정렬로 변경
+		- /templates/board/list.html에 게시글 번호 수정
+	2. /templates/board/list.html td 뱃지태그 추가
+
+	3. H2 -> Oracle로 DB변경
+		- build.gradle, Oracle 디펜던시 추가
+		- application.properties Oracle 관련 설정 추가, H2 설정 주석처리
+		- 재시작
+
+	4. 스프링 시큐리티(그다음 중요!)
+		- (설정) build.gradle 스프링 시큐리티 관련 디펜던시 추가
+		- (설정) Gradle 재빌드, 서버 실행
+		- user / 로그상 UUID(서버실행시 마다 변경) 입력
+		- /security/SecurityConfig.java 보안설정 파일 생성, 작성 -> 시큐리티를 다시 풀어주는 일
+
+		- /entity/Member.java 생성
+		- /repository/MemberRepository.java 인터페이스 생성
+		- /service/MemberService.java 생성 setMember() 메서드 작성

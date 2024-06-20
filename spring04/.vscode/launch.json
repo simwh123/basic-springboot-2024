@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BackboardApplication<backboard>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.simwo1.backboard.BackboardApplication",
+            "projectName": "backboard",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
