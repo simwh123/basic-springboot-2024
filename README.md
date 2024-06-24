@@ -366,3 +366,108 @@ Java 빅데이터 개발자과정 Spring Boot 학습 리포지토리
 		- /entity/Member.java 생성
 		- /repository/MemberRepository.java 인터페이스 생성
 		- /service/MemberService.java 생성 setMember() 메서드 작성
+
+## 8일차
+- Spring Boot JPA 프로젝트 개발 계속
+	1. 스프링 시큐리티 계속
+		- /security/SecurityConfig.java에 BCryptPasswordEncoder를 빈으로 작업 
+		- /validation/MemberForm.java 생성
+		- /controller/MemberController.java 생성
+		- /entity/Member.java에 regDate 추가
+		- /service/MemberService.java regdate() 부분 추가작성
+		- /templates/member/register.html 생성
+		- (설정) Member 테이블에 저장된 회원정보 확인
+		- /templates/layout.html에 회원가입 링크 추가
+		- /controller/MemberController.java Postmapping register에 중복회원가입 방지 추가
+		- /security/MemberRole.java enum으로 ROLE_ADMIN, ROLE_USER 생성
+		- /entitiy/Member.java role 변수 추가
+
+	2. 로그인 기능
+		- /security/SecurityConfig.java 에 login url 설정
+		- /templates/layout.html 로그인 링크 수정
+		- /templates/member/login.html 생성
+		- /repository/MemberRepository.java find* 메서드 추가
+		- /controller/MemberController.java login Get 메서드 작성
+		- /service/MemberSecurityService.java - 로그인은 post를 사용하지 않고, Spring Security가 지원하는 UserDetailsService인터페이스 활용
+		- /sercurity/SecurityConfig.java 계정관리자 빈 추가
+		- /templates/layout.html 로그인/로그아웃 토글 메뉴 추가
+
+
+	3. 게시글 작성자 추가
+		- /entity/Board.java, /entity/Reply.java 에 작성자 변수(속성) 추가
+		- /service/MemberService.java getMember() 메서드 
+		- (Tip) default Exception으로 예외를 처리하면 메서드 뒤에 항상 throws Exception 을 적어줘야 함.
+		- /common/NotFoundException.java 생성 -> throws Exception 쓰는데 반영
+		- /service/ReplyService.java setReply() 사용자 추가
+		- /controller/ReplyController.java 오류나는 setReply() 파라미터 수정
+		- /service/BoardService.java ..
+		- /controller/BoardControll.java setBoard() 사용자 추가
+		- /controller/ 작성하는 get/Post 메서드에 @PreAuthorize 어노테이션추가
+		- /config/SecurityConfig.java @PreAuthorize 동작하도록 설정 추가
+		- /templates/board/detail.html 답변 textarea 로그인전, 로그인후로 구분
+	
+		- /templates/board/list.html table 태그에 작성자 컬럼 추가
+		- /templates/board/detail.html 게시글 작성자, 댓글 작성자 표시 추가
+
+
+## 9일차
+- Spring Boot JPA 프로젝트 개발 계속
+	1. 수정, 삭제 기능
+		- /entity/Board, Reply.java 수정일자 필드 추가
+		- /templates/board/detail.html 수정, 삭제버튼 추가
+			- sec:authorize="isAuthenticated()" 없으면 500 에러
+		- /controller/BoardController.java, modify() GET 메서드 작성
+		- /templates/board/create.html form th:action을 삭제
+			- create.html 생성, 수정할 때 모두 사용
+			- get이 /board/create로 들어가면 post도 같은 URL로 실행되고, /board/modify/{bno}로 페이지를 들어가면 post도 같은 url로 실행
+		- /service/BoardService.java 수정관련 메서드 추가작성
+		- /controller/BoardController.java, modify() POST 메서드 작성
+			- html에는 BoardForm 객체 값이 들어있음. 컨트롤러에 받아서 Board객체 다시 만들어 서비스로 전달
+
+		- /service/BoardService.java 삭제관련 메서드 추가
+		- /controller/BoardController.java delete() GET 메서드 작성
+
+		- /templates/board/detail.html 댓글 수정, 삭제버튼 추가
+		- /service/ReplyService.java 수정, 삭제관련 메서드 추가
+		- /controller/ReplyController.java modify GET, POST메서드, 삭제 GET메서드 작성
+		- /templates/reply/modify.html 생성, 작성
+
+		- /templates/board/detail.html에 게시글, 댓글 수정날짜 표시
+
+	2. 앵커기능
+		- 추가, 수정, 삭제 시 이전 자신의 위치로 되돌아가는 기능
+		- /template/board/detail.html 댓글 마다 앵커링 추가
+		- /controller/ReplyController.java modify Post매핑, return에 앵커링 추가
+		- /service/ReplyService.java 생성메서드 void -> Reply 변경
+		- /controller/ReplyController.java create Post메서드를 변경
+		- /controller/BoardController.java detail() 메서드 수정
+
+	3. 검색 기능
+	 	- /service/BoardService.java search() 메서드 추가
+	 	- /repository/BoardRepository.java findAll() 메서드 추가
+	 	- /service/BoardService.java getList() 메서드 추가생성
+	 	- /controller/BoardController.java list() 메서드 추가
+	 	- /templates/board/list.html 검색창 추가, searchForm 폼영역 추가, 페이징영역 수정, javascript 추가
+
+	4. 마크다운 적용
+		- 마크다운 뷰, 마크다운 에디터  
+
+
+	- 수정, 삭제
+	- 앵커기능 
+	- 마크다운 적용, 마크다운에디터 추가
+	- 검색기능
+	- 카테고리 추가(게시판, QnA, 공지사항)
+	- 비밀번호 찾기, 비밀번호 변경
+	- 조회수 추가
+
+	- 리액트 적용
+	- 리액트로 프론트엔드 설정
+	- thymeleaf - 리액트로 변경
+	- Spring boot RestAPI 작업
+
+	- AWS 라이트세일 가입
+	- 서버 접속 프로그램 설정
+	- 웹서버 배포
+	- 8080 -> 80 서버
+	- http -> https 변경	

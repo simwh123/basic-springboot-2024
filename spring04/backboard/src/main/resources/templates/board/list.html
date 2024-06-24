@@ -1,29 +1,47 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
     <div layout:fragment="main-content" class="container my-3">
+        <!-- 검색창 영역-->
+        <div class="row my-3">
+            <div class="col-8">
+                <a th:href="@{/board/create}" class="btn btn-sm btn-primary">게시글 등록</a>
+            </div>
+            <div class="col-4">
+                <div class="input-group">
+                    <input type="text" id="search_kw" class="form-control" th:value="${kw}">
+                    <button id="btn_search" type="button" class="btn btn-sm btn-outline-secondary">찾기</button>
+                </div>
+            </div>
+        </div>
+        <!-- 게시글 리스트-->
         <table class="table table-light table-striped">
             <thead class="table-dark">
-                <tr>
+                <tr class="text-center">
                     <th>번호</th>
-                    <th>제목</th>
+                    <th style="width: 50%;">제목</th>
+                    <th>작성자</th>
                     <th>작성일</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="board, loop : ${paging}">
-                    <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
-                    <td>
+                <tr th:each="board, loop : ${paging}" class="text-center">
+                    <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}" class="text-end"></td>
+                    <td class="text-start">
                         <a th:href="@{|/board/detail/${board.bno}|}" th:text="${board.title}"></a>
                         <span th:if="${#lists.size(board.replyList) > 0}" th:text="${#lists.size(board.replyList)}" 
                               class="badge text-bg-success"></span>
-                    </td> 
+                    </td>
+                    <!-- 작성자 추가-->
+                    <td>
+                        <span th:if="${board.writer != null}" th:text="${board.writer.username}"></span>
+                    </td>
                     <td th:text="${#temporals.format(board.createDate, 'yyyy-MM-dd HH:mm')}"></td>
                 </tr>
             </tbody>
         </table>
         <!-- 페이징 시작 -->
         <div th:if="${!paging.isEmpty()}">
-            <ul class="pagination justify-content-center">                
+            <ul class="pagination justify-content-center"> 
                 <!-- 이전버튼 -->
                 <li th:classappend="${!paging.hasPrevious} ? disabled" class="page-item">
                     <a th:href="@{|?page=0|}" class="page-link">《</a>
@@ -36,7 +54,7 @@
                     th:if="${page >= paging.number-5 and page <= paging.number+5}"
                     th:classappend="${page == paging.number} ? 'active'" class="page-item">                    
                     <a th:href="@{|?page=${page}|}" th:text="${page+1}" class="page-link"></a>
-                </li>                
+                </li> 
                 <!-- 다음버튼 -->
                 <li th:classappend="${!paging.hasNext} ? disabled" class="page-item">
                     <a th:href="@{|?page=${paging.number+1}|}" class="page-link">〉</a>
@@ -47,8 +65,12 @@
             </ul>
         </div>
         <!-- 페이징 끝-->
-        <div class="d-flex justify-content-end">
-            <a th:href="@{/board/create}" class="btn btn-sm btn-primary">게시글 등록</a>
-        </div>
+        <form th:action="" method="get" id="searchForm">
+            <input type="hidden" id="kw" name="kw" th:value="${kw}">
+            <input type="hidden" id="page" name="page" th:value="${paging.number}">
+        </form>
     </div>
+    <script>
+        
+    </script>
 </html>
