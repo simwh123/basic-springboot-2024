@@ -55,4 +55,7 @@ public class Board {
     // 중요, RelationShip 일대다 설정
     @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE)
     private List<Reply> replyList;
+
+    @ManyToOne
+    private Category category; // free, qna로 구분해서 글생성 가능
 }
