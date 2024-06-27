@@ -1,3 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&display=swap');
+.poppins-semibold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+  }
+  
+  .poppins-bold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .poppins-extrabold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    font-style: normal;
+  }
+  
+  .poppins-black {
+    font-family: "Poppins", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+  }
+  
 body{margin-top:20px;}
 .cover-background {
     position: relative !important;
@@ -5,6 +30,9 @@ body{margin-top:20px;}
     overflow: hidden !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
+}
+h1{
+    font-family: 'Poppins' !important;
 }
 .p-0 {
     padding: 0!important;
