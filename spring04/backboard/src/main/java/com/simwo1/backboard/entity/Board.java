@@ -48,6 +48,9 @@ public class Board {
     @Column(name = "modifyDate")
     private LocalDateTime modifyDate; // 24.06.24 수정일 추가
 
+    // @Column(columnDefinition = "integer default 0")
+    private Integer hit; // 24.06.26 조회수 추가
+
     // 사용자가 여러개의 게시글을 작성할 수 있다. 다대일 설정
     @ManyToOne
     private Member writer;
