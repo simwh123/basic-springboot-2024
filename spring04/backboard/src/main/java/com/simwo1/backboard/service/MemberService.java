@@ -43,4 +43,13 @@ public class MemberService {
         else
             throw new NotFoundException("Member not found!");
     }
+
+    public Member getMemberByEmail(String email) {
+        Optional<Member> member = this.memberRepository.findByEmail(email);
+        if (member.isPresent())
+            return member.get();
+        else
+            throw new NotFoundException("Member not found!");
+    }
+
 }

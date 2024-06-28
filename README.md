@@ -625,10 +625,32 @@ Java 빅데이터 개발자과정 Spring Boot 학습 리포지토리
 		- https://www.postman.com/ 다운로드
 
 
-## 12일차
+## 13일차
 - Spring Boot JPA 프로젝트 개발 계속
+	0. 메일작업 중 생긴 오류
+		- 로그인하고 게시글 작성시 500에러 발생
+		- CSRF토큰 때문에 발생하는 오류
+		- /board/create.html, reply/modify.html 에 있는 csrf관련 태그 주석처리
 	1. 비밀번호 초기화(계속)
-		- 로그인 화면에서 비밀번호 초기화 버튼, AJAX로 RestAPI로 메일보내기
+		- /templates/member/login.html 비밀번호 초기화 버튼 추가
+		- /controller/MemberController.java 에 GetMapping 추가
+		- /templates/member/reset.html 생성 -> register.html 가져와서 수정
+		- /controller/MainController.java 생성,  /mail/reset-mail GetMapping 메서드 추가
+		- /service/MemberServicer.java 메일주소로 검색하는 메서드 추가 getMemberByEmail() 추가
+		- /service/MailService.java 에 메일보내는 메서드 추가, 수정
+    		- UUID를 생성해서 메일로 전송하는 기능 추가
+  		- /entity.Reset.java 생성
+  		
+		- /repository/RasetRepository.java 생성
+		- /service/ResetService.java 생성
+		
+		- 이메일 화면 수정
+		- /member/reset-password Get메서드 작성
+		- /html
+
+
+
+		- AJAX로 RestAPI로 메일보내기
 		- 메일에 링크 클릭
 		- http://localhost:8080/user/resetpassword (회원가입과 유사하게 개발)
 

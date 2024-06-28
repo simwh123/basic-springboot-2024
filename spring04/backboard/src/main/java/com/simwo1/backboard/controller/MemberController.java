@@ -25,6 +25,11 @@ public class MemberController {
         return "member/login";
     }
 
+    @GetMapping("/reset")
+    public String reset() {
+        return "member/reset";
+    }
+
     @GetMapping("/register")
     public String register(MemberForm memberForm) {
         return "member/register"; // templates/member/register.html
