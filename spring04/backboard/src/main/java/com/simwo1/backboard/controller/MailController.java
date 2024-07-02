@@ -19,26 +19,33 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class MailController {
 
-    private final MemberService memberservice;
+    private final MemberService memberService;
     private final MailService mailService;
 
     @PostMapping("/reset-mail")
-    public String reset_mail(@RequestParam("email") String email, Model model) {
+    public String reset_mail(Model model, @RequestParam("email") String email) {
         log.info(String.format("▶▶▶▶▶ reset.html에서 넘어온 이메일 : %s", email));
 
-        // DB에서 메일주소가 있는지 확인하고 있으면 초기화메일 발송 없으면 error발생
+        // DB에서 메일주소가 있는지 확인
+        // 있으면 초기화메일 보내고
+        // 없으면 에러!
         try {
-            Member member = this.memberservice.getMemberByEmail(email);
-            Boolean result = this.mailService.sendResetPawordEmail(member.getEmail());
+            Member member = this.memberService.getMemberByEmail(email);
+
+            // 메일전송
+            Boolean result = this.mailService.sendResetPaswordEmail(member.getEmail());
+
             if (result) {
-                log.info("초기화메일 전송 완료");
-                model.addAttribute("result", "초기화 메일 전송성공");
-            } else
-                model.addAttribute("result", "초기화 메일 전송실패");
+                log.info("▶▶▶▶▶ 초기화 메일 전송완료!!!");
+                model.addAttribute("result", "초기화 메일 전송성공!");
+            } else {
+                model.addAttribute("result", "초기화 메일 전송실패! 관리자에게 문의하세요.");
+            }
         } catch (Exception e) {
-            model.addAttribute("result", "초기화 메일 전송실패");
+            model.addAttribute("result", "초기화 메일 전송실패! 사용자가 없습니다!");
         }
 
         return "member/reset_result"; // member/reset_result.html 파일 생성
     }
+
 }

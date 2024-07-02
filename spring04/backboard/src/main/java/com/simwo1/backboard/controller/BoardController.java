@@ -38,7 +38,7 @@ public class BoardController {
 
     private final BoardService boardService; // 중간 연결책
     private final MemberService memberService; // 사용자 정보
-    private final CategoryService categoryService;
+    private final CategoryService categoryService; // 카테고리 사용.
 
     // @RequestMapping("/list", method=RequestMethod.GET) // 아래와 동일 기능
     // Model -> controller에 있는 객체를 View로 보내주는 역할을 하는 객체
@@ -48,13 +48,12 @@ public class BoardController {
     // // List<Board> boardList = this.boardService.getList();
     // // model.addAttribute("boardList", boardList); // thymeleaf, mustache, jsp등
     // view로 보내는 기능!!!
-    //
+
     // Page<Board> paging = this.boardService.getList(page);
     // model.addAttribute("paging", paging); // 페이징된 보드를 view로 전달!
-    //
+
     // return "board/list"; // templates/board/list.html 렌더링해서 리턴하라!
     // }
-
     // 24.06.24 list 새로 변경
     // @GetMapping("/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
@@ -62,18 +61,19 @@ public class BoardController {
         Page<Board> paging = this.boardService.getList(page, keyword); // 검색추가
         model.addAttribute("paging", paging);
         model.addAttribute("kw", keyword);
+
         return "board/list";
     }
 
-    // 24.06.25 마지막 카테고리까지 추가
+    // 24.06.24. 마지막 카테고리까지 추가
     @GetMapping("/list/{category}")
     public String list(Model model,
             @PathVariable(value = "category") String category,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "kw", defaultValue = "") String keyword) {
 
-        Category cate = this.categoryService.getCategory(category);
-        Page<Board> paging = this.boardService.getList(page, keyword, cate); // 검색 및 카테고리 추가
+        Category cate = this.categoryService.getCategory(category); // cate는 Category객체 변수사용X
+        Page<Board> paging = this.boardService.getList(page, keyword, cate); // 검색 및 카테고리추가
         model.addAttribute("paging", paging);
         model.addAttribute("kw", keyword);
         model.addAttribute("category", category);
@@ -85,11 +85,12 @@ public class BoardController {
     @GetMapping("/detail/{bno}")
     public String detail(Model model,
             @PathVariable("bno") Long bno, ReplyForm replyForm, HttpServletRequest request) {
-        // 이전 페이지 변수에 담기
-        String prevUrl = request.getHeader("referer");
-        log.info(String.format(" >>>> 현재 이전 페이지 : %s", prevUrl));
+
+        String prevUrl = request.getHeader("referer"); // 이전페이지 변수에 담기
+        log.info(String.format("▶▶▶▶▶ 현재 이전 페이지 : %s", prevUrl));
         // Board board = this.boardService.getBoard(bno);
         Board board = this.boardService.hitBoard(bno); // 조회수 증가하고 리턴
+
         model.addAttribute("board", board);
         model.addAttribute("prevUrl", prevUrl); // 이전 페이지 URL 뷰에 전달
         return "board/detail";
@@ -116,10 +117,40 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
+    // category 추가
+    @PreAuthorize("isAuthenticated()") // 로그인시만 작성가능
+    @GetMapping("/create/{category}")
+    public String create(Model model,
+            @PathVariable("category") String category,
+            BoardForm boardForm) {
+        model.addAttribute("category", category);
+        return "board/create";
+    }
+
+    // category 추가
+    @PreAuthorize("isAuthenticated()") // 로그인시만 작성가능
+    @PostMapping("/create/{category}")
+    public String create(Model model,
+            @PathVariable("category") String category,
+            @Valid BoardForm boardForm,
+            BindingResult bindingResult,
+            Principal principal) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("category", category);
+            return "board/create"; // 현재 html에 그대로 머무르기.
+        }
+
+        Member writer = this.memberService.getMember(principal.getName()); // 현재 로그인 사용자 아이디
+        // this.boardService.setBoard(title, content);
+        Category cate = this.categoryService.getCategory(category);
+        this.boardService.setBoard(boardForm.getTitle(), boardForm.getContent(), writer, cate);
+        return String.format("redirect:/board/list/%s", category);
+    }
+
     @PreAuthorize("isAuthenticated()") // 로그인시만 작성가능
     @GetMapping("/modify/{bno}")
-    public String modify(@PathVariable("bno") Long bno, BoardForm boardForm, Principal principal) {
-        Board board = this.boardService.getBoard(bno); // 기존 게시글 가져옴
+    public String modify(BoardForm boardForm, @PathVariable("bno") Long bno, Principal principal) {
+        Board board = this.boardService.getBoard(bno); // 기본 게시글 가져옴
 
         if (!board.getWriter().getUsername().equals(principal.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
@@ -139,9 +170,10 @@ public class BoardController {
         if (bindingResult.hasErrors()) {
             return "board/create"; // 현재 html에 그대로 머무르기.
         }
+
         Board board = this.boardService.getBoard(bno);
         if (!board.getWriter().getUsername().equals(principal.getName())) {
-            throw new ResponseStatusException(HttpStatus.MULTI_STATUS, "수정권한이 없습니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
         this.boardService.modBoard(board, boardForm.getTitle(), boardForm.getContent());
         return String.format("redirect:/board/detail/%s", bno);
@@ -152,39 +184,10 @@ public class BoardController {
     public String delete(@PathVariable("bno") Long bno, Principal principal) {
         Board board = this.boardService.getBoard(bno);
         if (!board.getWriter().getUsername().equals(principal.getName())) {
-            throw new ResponseStatusException(HttpStatus.MULTI_STATUS, "삭제권한이 없습니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
         }
-        this.boardService.remBoard(board);// 삭제부분
 
+        this.boardService.remBoard(board); // 삭제
         return "redirect:/";
     }
-
-    // category 추가
-    @PreAuthorize("isAuthenticated()") // 로그인시만 작성가능
-    @GetMapping("/create/{category}")
-    public String create(Model model,
-            @PathVariable("category") String category,
-            BoardForm boardForm) {
-        return "board/create";
-    }
-
-    // category 추가
-    @PreAuthorize("isAuthenticated()") // 로그인시만 작성가능
-    @PostMapping("/create/{category}")
-    public String create(Model model,
-            @PathVariable("category") String category,
-            @Valid BoardForm boardForm,
-            BindingResult bindingResult,
-            Principal principal) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("category", category);
-            return "board/create"; // 현재 html에 그대로 머무르기
-        }
-        Member writer = memberService.getMember(principal.getName()); // 현재 로그인 사용자 아이디
-        // this.boardService.setBoard(title, content);
-        Category cate = this.categoryService.getCategory(category);
-        this.boardService.setBoard(boardForm.getTitle(), boardForm.getContent(), writer, cate);
-        return String.format("redirect:/board/list/%s", category);
-    }
-
 }

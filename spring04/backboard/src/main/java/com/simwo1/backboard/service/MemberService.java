@@ -20,6 +20,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 새로 사용자 생성
     public Member setMember(String username, String email, String password) {
         Member member = Member.builder().username(username).email(email).regDate(LocalDateTime.now()).build();
 
@@ -35,6 +36,12 @@ public class MemberService {
         return member;
     }
 
+    // 기존 사용자 비번초기화
+    public void setMember(Member member) {
+        member.setPassword(passwordEncoder.encode((member.getPassword()))); // Bcrypt암호화를 안했어요!!!
+        this.memberRepository.save(member); // 업데이트!!
+    }
+
     // 사용자를 가져오는 메서드
     public Member getMember(String username) {
         Optional<Member> member = this.memberRepository.findByUsername(username);
@@ -44,6 +51,7 @@ public class MemberService {
             throw new NotFoundException("Member not found!");
     }
 
+    // 24.06.28. 이메일로 사용자 검색 메서드
     public Member getMemberByEmail(String email) {
         Optional<Member> member = this.memberRepository.findByEmail(email);
         if (member.isPresent())
