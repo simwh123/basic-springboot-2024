@@ -810,21 +810,39 @@ Java 빅데이터 개발자과정 Spring Boot 학습 리포지토리
 	1. 리액트 프로젝트 생성
 		- 터미널 /spring03 으로 이동
 		- > npx create-react-app frontboard
+	2. Spring Boot / React 같이 개발할때
+		- Spring Boot 웹서버 실행
+		- React 프론트웹서버 실행
+	3. 리액트 라이브러리 설치, npm
+		- 리액트용 Bootstrap 설치
+		-  > npm install react-bootstrap bootstrap
+		-  **npm audit fix --force 하지말것** 
+		-  > npm install axios -> RESP API 통신 라이브러리
+		-  > npm install react-router-dom -> 리액트 화면 네비게이션
+		-  > npm install react-js-pagination -> 리액트 페이징처리
+	4. frontboard 개발 시작
+		- App.js 에서 logo.svg 삭제, react-router-dom 으로 Routes, Route 사용
+		- index.js 에서 reportWebVitals() 삭제
+		- index.js, <React.StrictMode> 삭제 또는 주석
+		- /src/layout/Header.js, Footer.js 생성
+		- /src/routes/Home.js, BoardList.js, QnaList.js, Login.js 생성
+		- App.js에 Route될 화면 추가
+		- Header.js 에 react-router-dom 추가, Link, useNavigate 사용
+	5. backboard RestAPI 추가
+		- /restcontroller/RestBoardController.java 생성, BoardController에 있는 메서드 복사 
+		- Spring Boot와 Rest API 간의 리턴데이터 차이때문에 100% 호환안됨
+		- (문제!) Spring Boot에서 만든 Entity는 Board와 Reply등의 OneToMany / ManyToOne 가 JSON으로 변환할때 문제발생!
+		- /Entity를 그대로 사용하지 말고. RestAPI에서는 다른 클래스를 만들어야 한다
+		- /dto/BoardDto.java 생성
+		- /dto/ReplyDto.java 생성
+		- /RestBoardController.java getList()를 Board Entity -> BoardDto로 변경
+		- /security/SecurityConfig.java CORS 설정 추가
+	6. frontboard 개발 계속
+		- /BoardList.js 로직 구현
+		- BoardList.js axios RestAPI 호출내용 추가
+		- 테이블 내용을 boardList.map() 10개 리스트 디스플레이
 
 
-
-
-
-
-
-
-
-
-	3. 구글 로그인
-		- https://console.cloud.google.com/ 구글클라우드 콘솔
-		- 프로젝트 생성
-		- OAuth 동의화면 설정
-		- 개발 계속...
 
 
 ## 계속
