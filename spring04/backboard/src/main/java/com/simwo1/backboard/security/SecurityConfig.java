@@ -66,7 +66,6 @@ public class SecurityConfig {
 
         @Bean
         CorsConfigurationSource corsConfigurationSource() {
-
                 return request -> {
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowedHeaders(Collections.singletonList("*"));
@@ -75,7 +74,6 @@ public class SecurityConfig {
                                                                                                              // Origin
                                                                                                              // URL
                         config.setAllowCredentials(true);
-
                         return config;
                 };
         }

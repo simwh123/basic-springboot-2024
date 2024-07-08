@@ -13,10 +13,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReplyDto {
-    private Long rno;
-    private String content;
-    private LocalDateTime createDate;
-    private LocalDateTime modifyDate;
-    private String writer;
 
+    private Long rno;
+
+    private String content;
+
+    private LocalDateTime createDate;
+
+    private LocalDateTime modifyDate;
+
+    private String writer;
 }

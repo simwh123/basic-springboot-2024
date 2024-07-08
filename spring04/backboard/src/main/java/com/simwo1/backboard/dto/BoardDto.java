@@ -14,13 +14,22 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardDto {
-    private Long bno;
-    private String title;
-    private String content;
-    private LocalDateTime createDate;
-    private LocalDateTime modifyDate;
-    private Integer hit;
-    private String writer;
-    private List<ReplyDto> replyList;
 
+    private Long num; // 게시글 번호, 24.07.03 신규추가
+
+    private Long bno;
+
+    private String title; // 글제목
+
+    private String content; // 글내용
+
+    private LocalDateTime createDate; // 글생성일
+
+    private LocalDateTime modifyDate;
+
+    private Integer hit;
+
+    private String writer;
+
+    private List<ReplyDto> replyList;
 }

@@ -810,46 +810,101 @@ Java 빅데이터 개발자과정 Spring Boot 학습 리포지토리
 	1. 리액트 프로젝트 생성
 		- 터미널 /spring03 으로 이동
 		- > npx create-react-app frontboard
+	
 	2. Spring Boot / React 같이 개발할때
 		- Spring Boot 웹서버 실행
 		- React 프론트웹서버 실행
+
 	3. 리액트 라이브러리 설치, npm
 		- 리액트용 Bootstrap 설치
-		-  > npm install react-bootstrap bootstrap
-		-  **npm audit fix --force 하지말것** 
-		-  > npm install axios -> RESP API 통신 라이브러리
-		-  > npm install react-router-dom -> 리액트 화면 네비게이션
-		-  > npm install react-js-pagination -> 리액트 페이징처리
+		- > npm install react-bootstrap bootstrap  -> css 디자인
+		- **TIP npm audix fix --force는 절대 하지 말것!!!**
+		- > npm install axios  -> RESP API 통신 라이브러리
+		- > npm install react-router-dom   -> 리액트 화면 네비게이션
+		- > npm install react-js-pagination   -> 리액트 페이징 처리
+
 	4. frontboard 개발 시작
-		- App.js 에서 logo.svg 삭제, react-router-dom 으로 Routes, Route 사용
-		- index.js 에서 reportWebVitals() 삭제
+		- App.js, logo.svg 삭제, react-router-dom 으로 Routes, Route 사용
+		- index.js, reportWebVitals() 삭제
 		- index.js, <React.StrictMode> 삭제 또는 주석
-		- /src/layout/Header.js, Footer.js 생성
+		- /src/layout/Header.js, Footer.js를 생성
 		- /src/routes/Home.js, BoardList.js, QnaList.js, Login.js 생성
 		- App.js에 Route될 화면 추가
-		- Header.js 에 react-router-dom 추가, Link, useNavigate 사용
+		- Header.js 에 react-router-dom 추가. Link, useNavigate 사용
+
 	5. backboard RestAPI 추가
-		- /restcontroller/RestBoardController.java 생성, BoardController에 있는 메서드 복사 
-		- Spring Boot와 Rest API 간의 리턴데이터 차이때문에 100% 호환안됨
-		- (문제!) Spring Boot에서 만든 Entity는 Board와 Reply등의 OneToMany / ManyToOne 가 JSON으로 변환할때 문제발생!
-		- /Entity를 그대로 사용하지 말고. RestAPI에서는 다른 클래스를 만들어야 한다
+		- /restcontroller/RestBoardController.java 생성, BoardController에 있는 메서드 복사
+		- (문제) Spring Boot와 Rest API 간의 리턴데이터 차이때문에 100% 호환안됨
+		- (문제) Spring Boot에서 만든 Entity는 Board와 Reply 등의 OneToMany / ManyToOne 가 JSON으로 변환할때 문제발생!
+		- /Entity를 그대로 사용하지 말고, RestAPI에서는 다른 클래스를 만들어야 함
 		- /dto/BoardDto.java 생성
 		- /dto/ReplyDto.java 생성
 		- /RestBoardController.java getList()를 Board Entity -> BoardDto로 변경
 		- /security/SecurityConfig.java CORS 설정 추가
-	6. frontboard 개발 계속
-		- /BoardList.js 로직 구현
+	
+	6. frontboard 개발계속
 		- BoardList.js axios RestAPI 호출내용 추가
 		- 테이블 내용을 boardList.map() 10개 리스트 디스플레이
 
+			<img src="https://raw.githubusercontent.com/hugoMGSung/basic-springboot-2024/main/images/react003.png" width="730">
 
 
+## 15일차
+- Spring Boot React연동 프로젝트 개발 계속
+	1. Spring Boot 서버가 실행되지 않았을 때
+		- 프론트 서버부터 시작하면 Uncaught runtime error. 발생
+		- axios request가 예외발생 try - catch로 wrapping 해줘야 함
 
-## 계속
-- Spring Boot JPA 프로젝트
-	1. 남은 것
+	2. 페이징
+		- (Back) /dto/PagingDto.java 생성
+		- /dto/Header.java 생성
+		- RestBoardController.java list() 수정 List<BoardDto> -> Header<List<BoardDto>> 로 형 변환
+		- (Front) /BoardList.js 변수부분 수정
+		- /common/CommonFunc.js 생성 - 작성일을 수정함수 formatDate() 작성
+		- /BoardList.js 날짜부분에 formatDate() 적용
+		- /BoardList.js 댓글 갯수 표시
+		- (Back) /dto/BoardDto.java 게시글 번호 변수 추가
+		- RestBoardControll.java 게시글번호 계산로직 추가
+		- (Front) /BoardList.js bno를 num로 변경
+
+
+	1. 상세화면
+		- (Back) RestBoardController.java detail() 메서드 생성
+		- (Front) /BoardList.js 제목 수정
+		- /routes/BoardDetail.js 생성
+
+## 16일차
+- Spring Boot React연동 프로젝트 개발 계속
+	0. npm -> node에서 만든 package manager
+		- yarn, brew(MacOS), chocolatey...
+		- node, npm, npx... 명령어 먼저 공부 
+	
+	1. 로그인
+		- (Front) layout/Header.js 로그인, 회원가입 버튼으로 변경
+		- Login.js 화면 수정
+		- (Back) RestMemberController.java 생성 login() Post메서드 작성
+		- MemberService.java, getMemberByUsernameAndPassword() 메서드 작성
+		- Postman에서 테스트
+		- (Front) Login.js axios 부분 작성
+		- Home.js, localStorage 사용해서 로그인정보 출력
+		- Header.js 로그인버튼 -> 로그아웃
+
+	2. 상세화면 완료
+		- (Back) RestBoardController.java detail() 리턴값 변경
+		- (Front) BoardDetail.js에서 axios 로 가져오기
+
+
+## 남은것
+- 추가 개발필요
+	1. (Front) 입력화면
+	2. (Back) 구글 로그인
+		- https://console.cloud.google.com/ 구글클라우드 콘솔
+		- 프로젝트 생성
+		- OAuth 동의화면 설정
+		- 개발 계속...
+
+	3. (Back) 포트변경 
 		- 8080 -> 80 서버
-		- http -> https 변경
-
-	- 파일업로드 - AWS S3 체크
-	- 로그인한 사용자 헤더에 표시
+	4. (Back) Https 사용
+	5. (Back) 파일업로드
+	6. 로그인한 사용자 헤더에 표시
